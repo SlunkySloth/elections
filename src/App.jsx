@@ -131,14 +131,13 @@ export default function App() {
           age_category: formData.ageCategory
         }
       ]);
-      // Realtime listener will handle local state update
-    } else {
-      // Mock local state if Supabase not configured
-      setVotes(prev => ({
-        ...prev,
-        [candidateId]: prev[candidateId] + 1
-      }));
     }
+    
+    // Update local state immediately so user sees their vote reflected
+    setVotes(prev => ({
+      ...prev,
+      [candidateId]: prev[candidateId] + 1
+    }));
     
     setTimeout(() => {
       setHasVoted(true);
@@ -344,7 +343,7 @@ export default function App() {
                 onClick={resetVoter}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
               >
-                <ChevronLeft size={20} /> Submit Another Vote
+                <ChevronLeft size={20} /> Back
               </button>
             </div>
           </div>
