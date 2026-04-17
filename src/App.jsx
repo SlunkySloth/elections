@@ -116,7 +116,10 @@ export default function App() {
   }, []);
 
   const resetVoter = () => {
-
+    setHasVoted(false);
+    setSelectedCandidate(null);
+    setFormData({ district: '', ward: '', ageCategory: '' });
+  };
   return (
     <div className="app-container">
       <header className="header animate-slide-up">
