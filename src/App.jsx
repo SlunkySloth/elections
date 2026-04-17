@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import './App.css';
 import { Users, TrendingUp, ChevronLeft, RefreshCcw } from 'lucide-react';
@@ -57,6 +57,46 @@ export default function App() {
     ageCategory: ''
   });
 
+  useEffect(() => {
+    if (!supabase) return;
+
+    const fetchVotes = async () => {
+      const { data } = await supabase.from('vote_counts').select('*');
+      if (data) {
+        setVotes(prev => {
+          const newVotes = { ...INITIAL_VOTES };
+          data.forEach(row => {
+            newVotes[row.candidate_id] = row.total_votes;
+          });
+          return newVotes;
+        });
+      }
+    };
+    fetchVotes();
+
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'vote_counts',
+        },
+        (payload) => {
+          setVotes(prev => ({
+            ...prev,
+            [payload.new.candidate_id]: payload.new.total_votes
+          }));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const totalVotes = Object.values(votes).reduce((a, b) => a + b, 0);
 
   const handleFormChange = (e) => {
@@ -77,14 +117,29 @@ export default function App() {
     }
   };
 
-  const handleVote = useCallback((candidateId) => {
+  const handleVote = useCallback(async (candidateId) => {
     setIsCasting(true);
     
-    setTimeout(() => {
+    // Attempt Supabase insert if configured
+    if (supabase) {
+      await supabase.from('votes').insert([
+        {
+          candidate_id: candidateId,
+          district: formData.district,
+          ward: formData.ward,
+          age_category: formData.ageCategory
+        }
+      ]).catch(console.error);
+      // Realtime listener will handle local state update
+    } else {
+      // Mock local state if Supabase not configured
       setVotes(prev => ({
         ...prev,
         [candidateId]: prev[candidateId] + 1
       }));
+    }
+    
+    setTimeout(() => {
       setHasVoted(true);
       setIsCasting(false);
       
