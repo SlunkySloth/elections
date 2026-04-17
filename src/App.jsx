@@ -116,17 +116,6 @@ export default function App() {
   }, []);
 
   const resetVoter = () => {
-    setHasVoted(false);
-    setSelectedCandidate(null);
-    setFormData({ district: '', ward: '', ageCategory: '' });
-  };
-
-  const globalReset = () => {
-    if (window.confirm("Are you sure you want to completely reset the poll data to zero?")) {
-      setVotes(INITIAL_VOTES);
-      resetVoter();
-    }
-  };
 
   return (
     <div className="app-container">
@@ -297,14 +286,6 @@ export default function App() {
                 style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
               >
                 <ChevronLeft size={20} /> Submit Another Vote
-              </button>
-              
-              <button 
-                className="vote-btn" 
-                onClick={globalReset}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#dc2626', borderColor: '#ef4444' }}
-              >
-                <RefreshCcw size={20} /> Reset All Votes to Zero
               </button>
             </div>
           </div>
