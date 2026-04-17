@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import './App.css';
-import { Users, TrendingUp, ChevronLeft, RefreshCcw } from 'lucide-react';
+import { Users, TrendingUp, RefreshCcw } from 'lucide-react';
 import { supabase } from './supabase';
 
 const CANDIDATES = [
@@ -47,7 +47,9 @@ const INITIAL_VOTES = {
 };
 
 export default function App() {
-  const [hasVoted, setHasVoted] = useState(false);
+  const [hasVoted, setHasVoted] = useState(() => {
+    return localStorage.getItem('vote_2026_voted') === 'true';
+  });
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [votes, setVotes] = useState(INITIAL_VOTES);
   const [isCasting, setIsCasting] = useState(false);
@@ -141,6 +143,7 @@ export default function App() {
     
     setTimeout(() => {
       setHasVoted(true);
+      localStorage.setItem('vote_2026_voted', 'true');
       setIsCasting(false);
       
       const candidateInfo = CANDIDATES.find(c => c.id === candidateId);
@@ -170,11 +173,6 @@ export default function App() {
     }, 800);
   }, [formData]);
 
-  const resetVoter = () => {
-    setHasVoted(false);
-    setSelectedCandidate(null);
-    setFormData({ district: '', ward: '', ageCategory: '' });
-  };
   return (
     <div className="app-container">
       <header className="header animate-slide-up">
@@ -337,15 +335,7 @@ export default function App() {
               })}
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', marginTop: '3rem' }}>
-              <button 
-                className="vote-btn" 
-                onClick={resetVoter}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-              >
-                <ChevronLeft size={20} /> Back
-              </button>
-            </div>
+
           </div>
         ) : null}
       </main>
