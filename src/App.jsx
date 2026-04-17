@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import './App.css';
 import { Users, TrendingUp, ChevronLeft, RefreshCcw } from 'lucide-react';
+import { supabase } from './supabase';
 
 const CANDIDATES = [
   {
