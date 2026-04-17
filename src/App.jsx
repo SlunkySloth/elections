@@ -130,7 +130,7 @@ export default function App() {
           ward: formData.ward,
           age_category: formData.ageCategory
         }
-      ]).catch(console.error);
+      ]);
       // Realtime listener will handle local state update
     } else {
       // Mock local state if Supabase not configured
@@ -169,7 +169,7 @@ export default function App() {
         }
       }());
     }, 800);
-  }, []);
+  }, [formData]);
 
   const resetVoter = () => {
     setHasVoted(false);
